@@ -28,6 +28,7 @@ namespace TPAPIs_equipo_12B.Controllers
         {
             List<Articulo> listado = negocio.ListarArticulos();
             return listado.Find(x=> x.Id == id);    
+
         }
 
         // POST: api/Articulo

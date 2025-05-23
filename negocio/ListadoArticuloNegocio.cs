@@ -41,7 +41,7 @@ namespace negocio
                     aux.Categoria.Descripcion = (string)datos.Lector["Categoria"];
 
                     aux.Precio = (float)(decimal)datos.Lector["Precio"];
-
+                    aux.Imagenes = ListarImagenesPorArticulo(aux.Id);
 
                     lista.Add(aux);
                 }
@@ -61,6 +61,36 @@ namespace negocio
             }
         }
 
+        public List<Imagen> ListarImagenesPorArticulo(int idArticulo)
+        {
+            List<Imagen> imagenes = new List<Imagen>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("SELECT ImagenUrl FROM IMAGENES WHERE IdArticulo = @IdArticulo");
+                datos.setearParametro("@IdArticulo", idArticulo);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Imagen img = new Imagen();
+                   // img.Id = (int)datos.Lector["Id"];
+                    img.ImagenUrl = (string)datos.Lector["ImagenUrl"];
+                    imagenes.Add(img);
+                }
+
+                return imagenes;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
 
 

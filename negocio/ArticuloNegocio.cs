@@ -106,7 +106,7 @@ namespace negocio
                 while (datos.Lector.Read())
                 {
                     Imagen imagen = new Imagen();
-                    imagen.Id = (int)datos.Lector["Id"];
+                    //imagen.Id = (int)datos.Lector["Id"];
                     imagen.ImagenUrl = (string)datos.Lector["ImagenUrl"];
                     listaImagenes.Add(imagen);
                 }
