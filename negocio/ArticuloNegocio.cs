@@ -82,6 +82,26 @@ namespace negocio
                 //Elimino el articulo con el id asociado
                 datos.setearConsulta("Delete From ARTICULOS Where Id = '" + id + "'");
                 datos.ejecutarAccion();
+                EliminarImagenes(id);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void EliminarImagenes(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                //Elimino las imagenes
+                datos.setearConsulta("Delete From IMAGENES Where IdArticulo = '" + id + "'");
+                datos.ejecutarAccion();
             }
             catch (Exception ex)
             {
@@ -101,28 +121,45 @@ namespace negocio
 
             try
             {
-                datos.setearConsulta("select A.Id,A.Codigo,A.Nombre,A.Descripcion,M.Descripcion as 'Marca',C.Descripcion as 'Categoria',A.Precio, A.IdMarca, A.IdCategoria from ARTICULOS as A , MARCAS as M , CATEGORIAS as C where A.Id='" + id + "' and A.IdMarca=M.Id and A.IdCategoria=C.Id");
+                datos.setearConsulta("select A.Id,A.Codigo,A.Nombre,A.Descripcion,M.Descripcion as 'Marca',C.Descripcion as 'Categoria',A.Precio, A.IdMarca, A.IdCategoria  from ARTICULOS AS A LEFT JOIN MARCAS AS M ON A.IdMarca = M.Id LEFT JOIN CATEGORIAS AS C ON A.IdCategoria = C.Id WHERE A.Id='" + id + "'");
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     articuloBuscado = new Articulo();
                     articuloBuscado.Id = (int)datos.Lector["Id"];
-                    articuloBuscado.Codigo = (string)datos.Lector["Codigo"];
-                    articuloBuscado.Nombre = (string)datos.Lector["Nombre"];
-                    articuloBuscado.Descripcion = (string)datos.Lector["Descripcion"];
+                    /*  articuloBuscado.Codigo = (string)datos.Lector["Codigo"];
+                      articuloBuscado.Nombre = (string)datos.Lector["Nombre"];
+                      articuloBuscado.Descripcion = (string)datos.Lector["Descripcion"];
+
+                      articuloBuscado.Marca = new Marca();
+
+                      articuloBuscado.Marca.Id = (int)datos.Lector["IdMarca"];
+                      articuloBuscado.Marca.Descripcion = (string)datos.Lector["Marca"];
+
+                      articuloBuscado.Categoria = new Categoria();
+
+                      articuloBuscado.Categoria.Id = (int)datos.Lector["IdCategoria"];
+                      articuloBuscado.Categoria.Descripcion = (string)datos.Lector["Categoria"];
+
+                      articuloBuscado.Precio = (float)(decimal)datos.Lector["Precio"];
+                    */
+
+
+
+                    articuloBuscado.Codigo = datos.Lector["Codigo"] != DBNull.Value ? (string)datos.Lector["Codigo"] : null;
+                    articuloBuscado.Nombre = datos.Lector["Nombre"] != DBNull.Value ? (string)datos.Lector["Nombre"] : null;
+                    articuloBuscado.Descripcion = datos.Lector["Descripcion"] != DBNull.Value ? (string)datos.Lector["Descripcion"] : null;
 
                     articuloBuscado.Marca = new Marca();
-
-                    articuloBuscado.Marca.Id = (int)datos.Lector["IdMarca"];
-                    articuloBuscado.Marca.Descripcion = (string)datos.Lector["Marca"];
+                    articuloBuscado.Marca.Id = datos.Lector["IdMarca"] != DBNull.Value ? (int)datos.Lector["IdMarca"] : 0;
+                    articuloBuscado.Marca.Descripcion = datos.Lector["Marca"] != DBNull.Value ? (string)datos.Lector["Marca"] : null;
 
                     articuloBuscado.Categoria = new Categoria();
+                    articuloBuscado.Categoria.Id = datos.Lector["IdCategoria"] != DBNull.Value ? (int)datos.Lector["IdCategoria"] : 0;
+                    articuloBuscado.Categoria.Descripcion = datos.Lector["Categoria"] != DBNull.Value ? (string)datos.Lector["Categoria"] : null;
 
-                    articuloBuscado.Categoria.Id = (int)datos.Lector["IdCategoria"];
-                    articuloBuscado.Categoria.Descripcion = (string)datos.Lector["Categoria"];
-
-                    articuloBuscado.Precio = (float)(decimal)datos.Lector["Precio"];
+                    articuloBuscado.Precio = datos.Lector["Precio"] != DBNull.Value ? (float)(decimal)datos.Lector["Precio"] : 0;
 
                     // articuloBuscado.Imagenes = ListarImagenesPorArticulo(articuloBuscado.Id);
 

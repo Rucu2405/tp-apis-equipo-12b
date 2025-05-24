@@ -34,6 +34,7 @@ namespace TPAPIs_equipo_12B.Controllers
               return articulo;
           }
         */
+
         //Buscar artículos por ID...
         // GET: api/Articulo/5
         public HttpResponseMessage Get(int id)
@@ -84,7 +85,7 @@ namespace TPAPIs_equipo_12B.Controllers
             try
             {
                 //Valida que el ID del articulo exista
-                Articulo articuloExistente = negocio.ListarArticulos().Find(x => x.Id == id);
+                Articulo articuloExistente = negocio.buscarArticulo(id);
 
                 if (articuloExistente == null)
                 {
@@ -118,7 +119,7 @@ namespace TPAPIs_equipo_12B.Controllers
             try
             {
                 //Valida que el ID del articulo exista
-                Articulo articuloExistente = negocio.ListarArticulos().Find(x => x.Id == id);
+                Articulo articuloExistente = negocio.buscarArticulo(id);
 
                 if (articuloExistente == null)
                 {
