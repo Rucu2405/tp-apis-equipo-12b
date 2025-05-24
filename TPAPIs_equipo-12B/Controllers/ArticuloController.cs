@@ -52,26 +52,60 @@ namespace TPAPIs_equipo_12B.Controllers
         // PUT: api/Articulo/id
         public HttpResponseMessage Put(int id, [FromBody] ArticuloDto dto)
         {
-            Articulo nuevo = new Articulo();
-            nuevo.Codigo = dto.Codigo;
-            nuevo.Nombre = dto.Nombre;
-            nuevo.Descripcion = dto.Descripcion;
-            nuevo.Marca = new Marca { Id = dto.IdMarca };
-            nuevo.Categoria = new Categoria { Id = dto.IdCategoria };
-            nuevo.Precio = dto.Precio;
-            nuevo.Id = id;
-            negocio.Modificar(nuevo);
-            return Request.CreateResponse(HttpStatusCode.OK, "¡Artículo modificado correctamente!");
+            try
+            {
+                //Valida que el ID del articulo exista
+                Articulo articuloExistente = negocio.ListarArticulos().Find(x => x.Id == id);
+
+                if (articuloExistente == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "El artículo a modificar no existe.");
+                }
+
+                Articulo nuevo = new Articulo();
+                nuevo.Codigo = dto.Codigo;
+                nuevo.Nombre = dto.Nombre;
+                nuevo.Descripcion = dto.Descripcion;
+                nuevo.Marca = new Marca { Id = dto.IdMarca };
+                nuevo.Categoria = new Categoria { Id = dto.IdCategoria };
+                nuevo.Precio = dto.Precio;
+                nuevo.Id = id;
+                negocio.Modificar(nuevo);
+                return Request.CreateResponse(HttpStatusCode.OK, "¡Artículo modificado correctamente!");
+
+            }
+            catch (Exception)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al modificar el artículo.");
+            }
+            
         }
 
         //Eliminación física 
         // DELETE: api/Articulo/5
         public HttpResponseMessage Delete(int id)
         {
-            negocio.Eliminar(id);
-            return Request.CreateResponse(HttpStatusCode.OK, "Artículo eliminado con éxito.");
+            try
+            {
+                //Valida que el ID del articulo exista
+                Articulo articuloExistente = negocio.ListarArticulos().Find(x => x.Id == id);
 
-            //acá iría el eliminar imágenes
+                if (articuloExistente == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "El artículo a eliminar no existe.");
+                }
+
+                negocio.Eliminar(id);
+                return Request.CreateResponse(HttpStatusCode.OK, "Artículo eliminado con éxito.");
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al eliminar el artículo.");
+            }
+            
+
         }
     }
 }
