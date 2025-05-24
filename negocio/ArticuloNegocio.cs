@@ -51,6 +51,29 @@ namespace negocio
             }
 
         }
+
+        public void AgregarImagenes(int id,List<Imagen> imagenes)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                foreach (Imagen imagen in imagenes)
+                {
+
+
+                    datos.setearConsulta("insert into IMAGENES (IdArticulo,ImagenUrl)values("+id+",'"+imagen.ToString()+"')");
+                    datos.ejecutarAccion();
+                    datos.cerrarConexion();
+                }
+
+            }
+            catch (Exception ex) { throw ex; }
+            finally { datos.cerrarConexion(); }
+        }
+
+
+
         //Modificar articulo
         public void Modificar(Articulo mod)
         {

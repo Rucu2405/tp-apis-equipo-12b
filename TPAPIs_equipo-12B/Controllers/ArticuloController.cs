@@ -16,9 +16,9 @@ namespace TPAPIs_equipo_12B.Controllers
 
         private ArticuloNegocio negocio = new ArticuloNegocio();
 
-
         //Obtener listado de artículos...
         // GET: api/Articulo
+
         public IEnumerable<Articulo> Get()
         {
             return negocio.ListarArticulos();
@@ -46,7 +46,7 @@ namespace TPAPIs_equipo_12B.Controllers
                 if (articulo == null)
                 {
                     //Si es null, se informa que no existe.
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "Ese articulo no existe");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
                 }
                 //Si existe se retorna el articulo con sus imagenes.
                 articulo.Imagenes = negocio.ListarImagenes(id);
@@ -55,8 +55,8 @@ namespace TPAPIs_equipo_12B.Controllers
             }
             catch (Exception ex)
             {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
 
-                return Request.CreateResponse(HttpStatusCode.NotFound, "Ese articulo no existe");
             }
 
         }
@@ -65,6 +65,7 @@ namespace TPAPIs_equipo_12B.Controllers
         // POST: api/Articulo
         public HttpResponseMessage Post([FromBody] ArticuloDto dto)
         {
+
             Articulo nuevo = new Articulo();
             nuevo.Codigo = dto.Codigo;
             nuevo.Nombre = dto.Nombre;
@@ -78,6 +79,32 @@ namespace TPAPIs_equipo_12B.Controllers
             //acá iría el agregar imágenes
         }
 
+        /// Para agregar imagenes a los articulos
+        public HttpResponseMessage AgregarImagenes(int id, [FromBody] List<Imagen> dto)
+        {
+
+            try
+            {
+                Articulo articulo = new Articulo();
+                articulo = negocio.buscarArticulo(id);
+                if (articulo == null)
+                {
+                    //Si es null, se informa que no existe.
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
+                }
+              
+                negocio.AgregarImagenes(id, dto);
+                return Request.CreateResponse(HttpStatusCode.OK, "¡Imagenes agregadas correctamente al Articulo Nro: " + id + "! ");
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error inesperado");
+            }
+
+        }
+
+
+
         //Modifica artículo 
         // PUT: api/Articulo/id
         public HttpResponseMessage Put(int id, [FromBody] ArticuloDto dto)
@@ -89,7 +116,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 if (articuloExistente == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "El artículo a modificar no existe.");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + " para modificar, no existe");
                 }
 
                 Articulo nuevo = new Articulo();
@@ -123,7 +150,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 if (articuloExistente == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "El artículo a eliminar no existe.");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
                 }
 
                 negocio.Eliminar(id);
