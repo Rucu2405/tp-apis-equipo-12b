@@ -120,7 +120,7 @@ namespace negocio
             Articulo articuloBuscado = null;
 
             try
-            {
+            {//Cambio de consulkta con LEFT JOIN para que traiga los articulos que tengan campos en null.
                 datos.setearConsulta("select A.Id,A.Codigo,A.Nombre,A.Descripcion,M.Descripcion as 'Marca',C.Descripcion as 'Categoria',A.Precio, A.IdMarca, A.IdCategoria  from ARTICULOS AS A LEFT JOIN MARCAS AS M ON A.IdMarca = M.Id LEFT JOIN CATEGORIAS AS C ON A.IdCategoria = C.Id WHERE A.Id='" + id + "'");
                 datos.ejecutarLectura();
 
