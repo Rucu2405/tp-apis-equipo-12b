@@ -48,9 +48,20 @@ namespace TPAPIs_equipo_12B.Controllers
             //acá iría el agregar imágenes
         }
 
-        // PUT: api/Articulo/5
-        public void Put(int id, [FromBody] Articulo art)
+        //Modifica artículo 
+        // PUT: api/Articulo/id
+        public HttpResponseMessage Put(int id, [FromBody] ArticuloDto dto)
         {
+            Articulo nuevo = new Articulo();
+            nuevo.Codigo = dto.Codigo;
+            nuevo.Nombre = dto.Nombre;
+            nuevo.Descripcion = dto.Descripcion;
+            nuevo.Marca = new Marca { Id = dto.IdMarca };
+            nuevo.Categoria = new Categoria { Id = dto.IdCategoria };
+            nuevo.Precio = dto.Precio;
+            nuevo.Id = id;
+            negocio.Modificar(nuevo);
+            return Request.CreateResponse(HttpStatusCode.OK, "¡Artículo modificado correctamente!");
         }
 
         //Eliminación física 
