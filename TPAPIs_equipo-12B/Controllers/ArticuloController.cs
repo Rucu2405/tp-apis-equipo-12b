@@ -16,6 +16,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
         private ArticuloNegocio negocio = new ArticuloNegocio();
 
+
         //Obtener listado de artículos...
         // GET: api/Articulo
         public IEnumerable<Articulo> Get()
@@ -23,12 +24,40 @@ namespace TPAPIs_equipo_12B.Controllers
             return negocio.ListarArticulos();
         }
 
+
+        /*  public  Articulo Get(int id)
+          {
+              Articulo articulo = new Articulo();
+              articulo = negocio.buscarArticulo(id);
+              articulo.Imagenes = negocio.ListarImagenes(id);
+
+              return articulo;
+          }
+        */
         //Buscar artículos por ID...
         // GET: api/Articulo/5
-        public Articulo Get(int id)
+        public HttpResponseMessage Get(int id)
         {
-            List<Articulo> listado = negocio.ListarArticulos();
-            return listado.Find(x => x.Id == id);
+            try
+            {
+                Articulo articulo = new Articulo();
+                articulo = negocio.buscarArticulo(id);
+                if (articulo == null)
+                {
+                    //Si es null, se informa que no existe.
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "Ese articulo no existe");
+                }
+                //Si existe se retorna el articulo con sus imagenes.
+                articulo.Imagenes = negocio.ListarImagenes(id);
+                return Request.CreateResponse(HttpStatusCode.OK, articulo);
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.NotFound, "Ese articulo no existe");
+            }
+
         }
 
         //Agregar artículo con mensaje de éxito...
@@ -79,7 +108,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al modificar el artículo.");
             }
-            
+
         }
 
         //Eliminación física 
@@ -99,12 +128,12 @@ namespace TPAPIs_equipo_12B.Controllers
                 negocio.Eliminar(id);
                 return Request.CreateResponse(HttpStatusCode.OK, "Artículo eliminado con éxito.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al eliminar el artículo.");
             }
-            
+
 
         }
     }

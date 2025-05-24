@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using static System.Net.Mime.MediaTypeNames;
 using dominio;
+using System.Collections;
 
 namespace negocio
 {
@@ -16,6 +17,10 @@ namespace negocio
         public List<Articulo> ListarArticulos()
         {
             return listadoArticuloNegocio.Listar();
+        }
+        public List<Imagen> ListarImagenes(int id)
+        {
+            return listadoArticuloNegocio.ListarImagenesPorArticulo(id);
         }
 
         //Agregar articulo
@@ -45,6 +50,98 @@ namespace negocio
                 datos.cerrarConexion();
             }
 
+        }
+        //Modificar articulo
+        public void Modificar(Articulo mod)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("Update ARTICULOS set Codigo = '" + mod.Codigo + "' , Nombre = '" + mod.Nombre + "', Precio = '" + mod.Precio + "' , Descripcion = '" + mod.Descripcion + "' , IdMarca = '" + mod.Marca.Id + "', IdCategoria = '" + mod.Categoria.Id + "' Where Id = '" + mod.Id + "'");
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+
+        }
+        //Eliminar artículo (eliminación física)
+
+        public void Eliminar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                //Elimino el articulo con el id asociado
+                datos.setearConsulta("Delete From ARTICULOS Where Id = '" + id + "'");
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public Articulo buscarArticulo(int id)
+        {
+
+            AccesoDatos datos = new AccesoDatos();
+            Articulo articuloBuscado = null;
+
+            try
+            {
+                datos.setearConsulta("select A.Id,A.Codigo,A.Nombre,A.Descripcion,M.Descripcion as 'Marca',C.Descripcion as 'Categoria',A.Precio, A.IdMarca, A.IdCategoria from ARTICULOS as A , MARCAS as M , CATEGORIAS as C where A.Id='" + id + "' and A.IdMarca=M.Id and A.IdCategoria=C.Id");
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    articuloBuscado = new Articulo();
+                    articuloBuscado.Id = (int)datos.Lector["Id"];
+                    articuloBuscado.Codigo = (string)datos.Lector["Codigo"];
+                    articuloBuscado.Nombre = (string)datos.Lector["Nombre"];
+                    articuloBuscado.Descripcion = (string)datos.Lector["Descripcion"];
+
+                    articuloBuscado.Marca = new Marca();
+
+                    articuloBuscado.Marca.Id = (int)datos.Lector["IdMarca"];
+                    articuloBuscado.Marca.Descripcion = (string)datos.Lector["Marca"];
+
+                    articuloBuscado.Categoria = new Categoria();
+
+                    articuloBuscado.Categoria.Id = (int)datos.Lector["IdCategoria"];
+                    articuloBuscado.Categoria.Descripcion = (string)datos.Lector["Categoria"];
+
+                    articuloBuscado.Precio = (float)(decimal)datos.Lector["Precio"];
+
+                    // articuloBuscado.Imagenes = ListarImagenesPorArticulo(articuloBuscado.Id);
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+
+
+            return articuloBuscado;
         }
 
         //Obtener el ID del último artículo creado
@@ -99,14 +196,13 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.setearConsulta("select Id, ImagenUrl from IMAGENES where IdArticulo = @IdArticulo");
+                datos.setearConsulta("select ImagenUrl from IMAGENES where IdArticulo = @IdArticulo");
                 datos.setearParametro("@IdArticulo", idArticulo);
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Imagen imagen = new Imagen();
-                    //imagen.Id = (int)datos.Lector["Id"];
                     imagen.ImagenUrl = (string)datos.Lector["ImagenUrl"];
                     listaImagenes.Add(imagen);
                 }
@@ -123,27 +219,6 @@ namespace negocio
             }
         }
 
-        //Modificar articulo
-        public void Modificar(Articulo mod)
-        {
-            AccesoDatos datos = new AccesoDatos();
-
-            try
-            {
-                datos.setearConsulta("Update ARTICULOS set Codigo = '" + mod.Codigo + "' , Nombre = '" + mod.Nombre + "', Precio = '" + mod.Precio + "' , Descripcion = '" + mod.Descripcion + "' , IdMarca = '" + mod.Marca.Id + "', IdCategoria = '" + mod.Categoria.Id + "' Where Id = '" + mod.Id + "'");
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-
-                throw ex;
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-
-        }
 
 
 
@@ -167,26 +242,7 @@ namespace negocio
             }
         }
 
-        //Eliminar artículo (eliminación física)
 
-        public void Eliminar(int id)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            try
-            {
-                //Elimino el articulo con el id asociado
-                datos.setearConsulta("Delete From ARTICULOS Where Id = '" + id + "'");
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-        }
 
         //Filtro rapido del buscador
         public List<Articulo> Filtrar(string buscar)
