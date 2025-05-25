@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Web;
 
-
-namespace dominio
+namespace TPAPIs_equipo_12B.Models
 {
-    public class Imagen
+    public class ImagenDto
     {
-        //public int Id { get; set; }
-
+        [Required(ErrorMessage = "El campo ImagenUrl es obligatorio")]
         public string ImagenUrl { get; set; }
 
         public override string ToString()
         {
             return ImagenUrl;
         }
+
     }
 }

@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Results;
 using dominio;
+using Microsoft.Ajax.Utilities;
 using negocio;
 using TPAPIs_equipo_12B.Models;
 
@@ -55,7 +56,7 @@ namespace TPAPIs_equipo_12B.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, articulo);
 
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado: " + ex.Message);
             }
@@ -84,7 +85,7 @@ namespace TPAPIs_equipo_12B.Controllers
                             }
 
                         }
-                            
+
                     }
 
                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos de artículo inválidos. Asegúrese de que el formato  sea el correcto.");
@@ -135,41 +136,15 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al agregar el artículo: " + ex.Message);
             }
-            
-            
+
+
         }
 
         /// Para agregar imagenes a los articulos
-        public HttpResponseMessage AgregarImagenes(int id, [FromBody] List<Imagen> dto)
+        public HttpResponseMessage AgregarImagenes(int id, [FromBody] List<ImagenDto> dto)
         {
-
             try
             {
-                //Valida que el dto sea correcto
-                if (dto == null)
-                {
-
-                    if (!ModelState.IsValid)
-                    {
-                        foreach (var state in ModelState)
-                        {
-                            foreach (var error in state.Value.Errors)
-                            {
-                                
-                                //Capturamos el nombre del campo que tira error
-                                string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
-                            }
-
-                        }
-
-                    }
-
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos ingresados son inválidos. Asegúrese de que el formato  sea el correcto.");
-                }
-                
-                
-                
                 Articulo articulo = new Articulo();
                 articulo = negocio.buscarArticulo(id);
                 if (articulo == null)
@@ -179,8 +154,40 @@ namespace TPAPIs_equipo_12B.Controllers
                 }
 
 
-                negocio.AgregarImagenes(id, dto);
+
+                //Valida que el dto sea correcto
+                if (dto == null || !dto.Any())
+                {
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "No puede enviar null, se espera una lista de imagenUrl, verifique el formato correcto.");
+                }
+           
+
+                if (!ModelState.IsValid)
+                {
+                                        foreach (var state in ModelState)
+                    {
+                        foreach (var error in state.Value.Errors)
+                        {
+                            //Capturamos el nombre del campo que tira error
+                            // string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                            // return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido ImagenUrl: UrlDeLaImagen, campo y valor con comillas dobles");
+                        }
+
+                    }
+                    
+                }
+                             
+
+                List<Imagen> listaImagenes = dto.Select(i => new Imagen
+                {
+                    ImagenUrl = i.ImagenUrl
+                }).ToList();
+
+                negocio.AgregarImagenes(id, listaImagenes);
                 return Request.CreateResponse(HttpStatusCode.OK, "¡Imagenes agregadas correctamente al Articulo Nro: " + id + "! ");
+
             }
             catch (Exception ex)
             {
