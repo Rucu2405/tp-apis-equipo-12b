@@ -55,10 +55,9 @@ namespace TPAPIs_equipo_12B.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, articulo);
 
             }
-            catch (Exception)
+            catch (Exception ex )
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
-
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado: " + ex.Message);
             }
 
         }
@@ -78,8 +77,7 @@ namespace TPAPIs_equipo_12B.Controllers
                         {
                             foreach (var error in state.Value.Errors)
                             {
-                                ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR----->." + state.Value.Errors);
-                                ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR22----->." + state.Key);
+
                                 //Capturamos el nombre del campo que tira error
                                 string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
                                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
@@ -147,6 +145,31 @@ namespace TPAPIs_equipo_12B.Controllers
 
             try
             {
+                //Valida que el dto sea correcto
+                if (dto == null)
+                {
+
+                    if (!ModelState.IsValid)
+                    {
+                        foreach (var state in ModelState)
+                        {
+                            foreach (var error in state.Value.Errors)
+                            {
+                                
+                                //Capturamos el nombre del campo que tira error
+                                string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
+                            }
+
+                        }
+
+                    }
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos ingresados son inválidos. Asegúrese de que el formato  sea el correcto.");
+                }
+                
+                
+                
                 Articulo articulo = new Articulo();
                 articulo = negocio.buscarArticulo(id);
                 if (articulo == null)
@@ -154,13 +177,14 @@ namespace TPAPIs_equipo_12B.Controllers
                     //Si es null, se informa que no existe.
                     return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
                 }
-              
+
+
                 negocio.AgregarImagenes(id, dto);
                 return Request.CreateResponse(HttpStatusCode.OK, "¡Imagenes agregadas correctamente al Articulo Nro: " + id + "! ");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error inesperado");
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error inesperado " + ex.Message);
             }
 
         }
@@ -245,10 +269,10 @@ namespace TPAPIs_equipo_12B.Controllers
                 return Request.CreateResponse(HttpStatusCode.OK, "¡Artículo modificado correctamente!");
 
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al modificar el artículo.");
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al modificar el artículo. " + ex.Message);
             }
 
         }
@@ -267,13 +291,15 @@ namespace TPAPIs_equipo_12B.Controllers
                     return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + ", no existe");
                 }
 
+                //Elimina articulo
                 negocio.Eliminar(id);
+
                 return Request.CreateResponse(HttpStatusCode.OK, "Artículo eliminado con éxito.");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al eliminar el artículo.");
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado al eliminar el artículo. " + ex.Message);
             }
 
 
