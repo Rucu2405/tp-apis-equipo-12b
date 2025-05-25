@@ -63,6 +63,86 @@ namespace TPAPIs_equipo_12B.Controllers
 
         }
 
+        //Buscar articulos por criterios de busqueda
+        // GET: api/Articulo/Buscar?nombre=S23
+        [HttpGet]
+        [Route("api/Articulo/Buscar")]
+        public HttpResponseMessage Buscar([FromUri] string nombre = null, [FromUri] string codigo = null, [FromUri] string descripcion = null, [FromUri] string marca = null, [FromUri] string categoria = null)
+        {
+            List<Articulo> resultados = new List<Articulo>();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(nombre) && string.IsNullOrWhiteSpace(codigo) && string.IsNullOrWhiteSpace(descripcion) && string.IsNullOrWhiteSpace(marca) && string.IsNullOrWhiteSpace(categoria))
+                {
+                    resultados = negocio.ListarArticulos();
+                }
+                else
+                {
+                    string criterioBusqueda = string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(nombre))
+                    {
+                        criterioBusqueda += nombre;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(codigo))
+                    {
+                        if (!string.IsNullOrEmpty(criterioBusqueda))
+                        {
+                            criterioBusqueda += " ";
+                        }
+                        criterioBusqueda += codigo;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(descripcion))
+                    {
+                        if (!string.IsNullOrEmpty(criterioBusqueda))
+                        {
+                            criterioBusqueda += " ";
+                        }
+                        criterioBusqueda += descripcion;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(marca))
+                    {
+                        if (!string.IsNullOrEmpty(criterioBusqueda))
+                        {
+                            criterioBusqueda += " ";
+                        }
+                        criterioBusqueda += marca;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(categoria))
+                    {
+                        if (!string.IsNullOrEmpty(criterioBusqueda))
+                        {
+                            criterioBusqueda += " ";
+                        }
+                        criterioBusqueda += categoria;
+                    }
+
+                    // Llama a Filtrar del filtro rapido
+                    resultados = negocio.Filtrar(criterioBusqueda);
+
+                }
+
+                if (resultados == null || !resultados.Any())
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "No se encontraron artículos que coincidan con los criterios de búsqueda.");
+                }
+
+
+                return Request.CreateResponse(HttpStatusCode.OK, resultados);
+
+
+            }
+            catch (Exception ex)
+            {
+
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Ocurrió un error inesperado: " + ex.Message);
+            }
+        }
+
         //Agregar artículo con mensaje de éxito...
         // POST: api/Articulo
         public HttpResponseMessage Post([FromBody] ArticuloDto dto)
