@@ -8,7 +8,8 @@ namespace TPAPIs_equipo_12B.Models
 {
     public class ImagenDto
     {
-        [Required(ErrorMessage = "El campo ImagenUrl es obligatorio")]
+        [Required(ErrorMessage = "El campo 'ImagenUrl' es obligatorio.")]
+        [Url(ErrorMessage = "Ingrese una URL válida.")]
         public string ImagenUrl { get; set; }
 
         public override string ToString()

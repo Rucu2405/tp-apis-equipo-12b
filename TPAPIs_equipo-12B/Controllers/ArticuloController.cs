@@ -183,7 +183,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 if (categoriaExistente == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "El categoría Nro: " + dto.IdCategoria + " para agregar, no existe");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "La categoría Nro: " + dto.IdCategoria + " para agregar, no existe");
                 }
 
                 //Validamos como campos obligatorios Codigo,Nombre y Precio:
@@ -239,26 +239,25 @@ namespace TPAPIs_equipo_12B.Controllers
                 if (dto == null || !dto.Any())
                 {
 
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "No puede enviar null, se espera una lista de imagenUrl, verifique el formato correcto.");
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "No puede enviar null, se espera una lista de URL de imágenes. Verifique el formato.");
                 }
-           
+
 
                 if (!ModelState.IsValid)
                 {
-                                        foreach (var state in ModelState)
+                    foreach (var state in ModelState)
                     {
                         foreach (var error in state.Value.Errors)
                         {
                             //Capturamos el nombre del campo que tira error
-                            // string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
-                            // return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido ImagenUrl: UrlDeLaImagen, campo y valor con comillas dobles");
+                            string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: "  + campoInvalido);
                         }
 
                     }
-                    
+
                 }
-                             
+
 
                 List<Imagen> listaImagenes = dto.Select(i => new Imagen
                 {
@@ -266,12 +265,12 @@ namespace TPAPIs_equipo_12B.Controllers
                 }).ToList();
 
                 negocio.AgregarImagenes(id, listaImagenes);
-                return Request.CreateResponse(HttpStatusCode.OK, "¡Imagenes agregadas correctamente al Articulo Nro: " + id + "! ");
+                return Request.CreateResponse(HttpStatusCode.OK, "¡Imagenes agregadas correctamente al articulo Nro: " + id + "! ");
 
             }
             catch (Exception ex)
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error inesperado " + ex.Message);
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, "Error inesperado: " + ex.Message);
             }
 
         }
@@ -326,7 +325,7 @@ namespace TPAPIs_equipo_12B.Controllers
 
                 if (categoriaExistente == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "El categoría Nro: " + dto.IdCategoria + " para modificar, no existe");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "La categoría Nro: " + dto.IdCategoria + " para modificar, no existe");
                 }
 
                 //Validamos como campos obligatorios Codigo,Nombre y Precio:
