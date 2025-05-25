@@ -15,6 +15,8 @@ namespace TPAPIs_equipo_12B.Controllers
     {
 
         private ArticuloNegocio negocio = new ArticuloNegocio();
+        private CategoriaNegocio categoriaNegocio = new CategoriaNegocio();
+        private MarcaNegocio marcaNegocio = new MarcaNegocio();
 
         //Obtener listado de artículos...
         // GET: api/Articulo
@@ -65,6 +67,21 @@ namespace TPAPIs_equipo_12B.Controllers
         // POST: api/Articulo
         public HttpResponseMessage Post([FromBody] ArticuloDto dto)
         {
+            //Valida que el ID de la marca y categoria exista
+            Marca marcaExistente = marcaNegocio.ListarMarca().Find(x => x.Id == dto.IdMarca);
+            Categoria categoriaExistente = categoriaNegocio.ListarCategoria().Find(x => x.Id == dto.IdCategoria);
+
+
+            if (marcaExistente == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "La marca Nro: " + dto.IdMarca + " para modificar, no existe");
+            }
+
+            if (categoriaExistente == null)
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound, "El categoría Nro: " + dto.IdCategoria + " para modificar, no existe");
+            }
+
 
             Articulo nuevo = new Articulo();
             nuevo.Codigo = dto.Codigo;
@@ -111,12 +128,24 @@ namespace TPAPIs_equipo_12B.Controllers
         {
             try
             {
-                //Valida que el ID del articulo exista
+                //Valida que el ID del articulo, marca y categoria exista
                 Articulo articuloExistente = negocio.buscarArticulo(id);
+                Marca marcaExistente = marcaNegocio.ListarMarca().Find(x => x.Id == dto.IdMarca);
+                Categoria categoriaExistente = categoriaNegocio.ListarCategoria().Find(x => x.Id == dto.IdCategoria);
 
                 if (articuloExistente == null)
                 {
-                    return Request.CreateResponse(HttpStatusCode.NotFound, "El articulo Nro: " + id + " para modificar, no existe");
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El artículo Nro: " + id + " para modificar, no existe");
+                }
+
+                if (marcaExistente == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "La marca Nro: " + dto.IdMarca + " para modificar, no existe");
+                }
+
+                if (categoriaExistente == null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NotFound, "El categoría Nro: " + dto.IdCategoria + " para modificar, no existe");
                 }
 
                 Articulo nuevo = new Articulo();
