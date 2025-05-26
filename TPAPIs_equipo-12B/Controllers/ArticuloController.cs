@@ -152,23 +152,28 @@ namespace TPAPIs_equipo_12B.Controllers
                 //Valida que el dto sea correcto
                 if (dto == null)
                 {
-                    if (!ModelState.IsValid)
-                    {
-                        foreach (var state in ModelState)
-                        {
-                            foreach (var error in state.Value.Errors)
-                            {
 
-                                //Capturamos el nombre del campo que tira error
-                                string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Asegúrese de que el formato  sea el correcto.");
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (var state in ModelState)
+                    {
+                        foreach (var error in state.Value.Errors)
+                        {
+
+                            //Capturamos el nombre del campo que tira error
+                            string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                            if (campoInvalido == "dto")
+                            {
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido");
                             }
 
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
                         }
 
                     }
 
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos de artículo inválidos. Asegúrese de que el formato  sea el correcto.");
                 }
 
                 //Valida que el ID de la marca y categoria exista
@@ -251,7 +256,9 @@ namespace TPAPIs_equipo_12B.Controllers
                         {
                             //Capturamos el nombre del campo que tira error
                             string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
-                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: "  + campoInvalido);
+
+
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
                         }
 
                     }
@@ -283,27 +290,52 @@ namespace TPAPIs_equipo_12B.Controllers
         {
             try
             {
-                //Valida que el dto sea correcto
+                /* //Valida que el dto sea correcto
+                 if (dto == null)
+                 {
+                     if (!ModelState.IsValid)
+                     {
+                         foreach (var state in ModelState)
+                         {
+                             foreach (var error in state.Value.Errors)
+                             {
+                                 ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR----->." + state.Value.Errors);
+                                 ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR22----->." + state.Key);
+                                 //Capturamos el nombre del campo que tira error
+                                 string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                                 return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
+                             }
+
+                         }
+
+                     }
+
+                     return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos de artículo inválidos. Asegúrese de que el formato  sea el correcto.");
+                 }*/
                 if (dto == null)
                 {
-                    if (!ModelState.IsValid)
+
+                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Asegúrese de que el formato  sea el correcto.");
+                }
+                if (!ModelState.IsValid)
+                {
+                    foreach (var state in ModelState)
                     {
-                        foreach (var state in ModelState)
+                        foreach (var error in state.Value.Errors)
                         {
-                            foreach (var error in state.Value.Errors)
+
+                            //Capturamos el nombre del campo que tira error
+                            string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
+                            if (campoInvalido == "dto")
                             {
-                                ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR----->." + state.Value.Errors);
-                                ///return Request.CreateResponse(HttpStatusCode.BadRequest, "aaaaERRORRRR22----->." + state.Key);
-                                //Capturamos el nombre del campo que tira error
-                                string campoInvalido = state.Key.Contains(".") ? state.Key.Split('.').Last() : state.Key;
-                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
+                                return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido");
                             }
 
+                            return Request.CreateResponse(HttpStatusCode.BadRequest, "Debe ingresar un formato válido en el campo: " + campoInvalido);
                         }
 
                     }
 
-                    return Request.CreateResponse(HttpStatusCode.BadRequest, "Datos de artículo inválidos. Asegúrese de que el formato  sea el correcto.");
                 }
 
 
